@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Welcome Back</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head></head>
+<body class="login-page">
+  <div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <div id="scene">
+
+    <!-- ── Left: Brand Panel ── -->
+    <div class="brand-panel">
+      <div class="logo">
+        <div class="logo-dot"><i class="fa-solid fa-bolt" style="color:#fff"></i></div>
+        <h1>PlaceMentor</h1>
+      </div>
+      <div class="brand-copy">
+        <h2>Sign in to<br>your <span>world.</span></h2>
+        <p>Access your dashboard, projects, and tools — everything in one place, built for you.</p>
+      </div>
+      <div class="cta-register">
+        <p>Don't have an account yet?</p>
+        <a href="register.html" class="btn-outline">
+          Create Account <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Right: Login Form ── -->
+    <div class="form-panel">
+      <div class="form-header">
+        <h1>Welcome back</h1>
+        <p>Enter your credentials to access your account</p>
+      </div>
+
+      <div class="social-row">
+        <button class="social-btn" onclick="socialLogin('Google')">
+          <i class="fa-brands fa-google"></i> Google
+        </button>
+        <button class="social-btn" onclick="socialLogin('GitHub')">
+          <i class="fa-brands fa-github"></i> GitHub
+        </button>
+        <button class="social-btn" onclick="socialLogin('LinkedIn')">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </button>
+      </div>
+
+      <div class="divider">or continue with email</div>
+
+      <form id="loginForm" novalidate>
+        <div class="field" id="field-email">
+          <label for="email">Email</label>
+          <div class="input-wrap">
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+            <i class="fa-regular fa-envelope"></i>
+          </div>
+        </div>
+
+        <div class="field" id="field-password">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" />
+            <i class="fa-solid fa-lock"></i>
+            <button type="button" class="pwd-toggle" id="pwdToggle" aria-label="Toggle password visibility">
+              <i class="fa-regular fa-eye" id="pwdIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe" />
+            <span class="checkmark"></span>
+            Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submitBtn">
+          <span class="btn-shine"></span>
+          <span class="spinner"></span>
+          <span class="btn-text">Sign In &nbsp;→</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const pwdToggle = document.getElementById('pwdToggle');
+    const pwdInput  = document.getElementById('password');
+    const pwdIcon   = document.getElementById('pwdIcon');
+    pwdToggle.addEventListener('click', () => {
+      const show = pwdInput.type === 'password';
+      pwdInput.type = show ? 'text' : 'password';
+      pwdIcon.className = show ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    });
+
+    const emailInput = document.getElementById('email');
+    emailInput.addEventListener('blur', () => {
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+      emailInput.classList.toggle('field-error', emailInput.value && !valid);
+    });
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.classList.add('btn-loading');
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  let valid = true;
+
+  if (!email) {
+    document.getElementById('email').classList.add('field-error');
+    valid = false;
+  }
+
+  if (!password) {
+    document.getElementById('password').classList.add('field-error');
+    valid = false;
+  }
+
+  if (!valid) {
+    submitBtn.classList.remove('btn-loading');
+    return;
+  }
+
+  try {
+
+  const response = await fetch(
+    "http://localhost:3000/login",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  submitBtn.classList.remove('btn-loading');
+
+  if (data.success) {
+
+    localStorage.setItem(
+      "loggedInUser",
+      JSON.stringify(data.user)
+    );
+
+    submitBtn.innerHTML =
+      '<span class="btn-text">✓ Login Successful</span>';
+
+    submitBtn.style.background = '#22c55e';
+
+    setTimeout(() => {
+      window.location.replace("../dashboard.html");
+    }, 1000);
+
+  } else {
+    alert(data.message);
+  }
+
+} catch (error) {
+  submitBtn.classList.remove('btn-loading');
+  console.error(error);
+  alert("Server Connection Failed");
+}
+});
+</script>
+</body>
+</html>
