@@ -166,55 +166,96 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     </div>
   </div>
 
-  <script>
-    function setupToggle(toggleId, inputId, iconId) {
-      document.getElementById(toggleId).addEventListener('click', () => {
-        const inp = document.getElementById(inputId);
-        const ico = document.getElementById(iconId);
-        const show = inp.type === 'password';
-        inp.type = show ? 'text' : 'password';
-        ico.className = show ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
-      });
+ <script type="module">
+
+import { auth } from "./firebase.js";
+
+import {
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+function setupToggle(toggleId, inputId, iconId) {
+  document.getElementById(toggleId).addEventListener('click', () => {
+    const inp = document.getElementById(inputId);
+    const ico = document.getElementById(iconId);
+    const show = inp.type === 'password';
+
+    inp.type = show ? 'text' : 'password';
+    ico.className = show
+      ? 'fa-regular fa-eye-slash'
+      : 'fa-regular fa-eye';
+  });
+}
+
+setupToggle('pwdToggle1', 'password', 'pwdIcon1');
+setupToggle('pwdToggle2', 'confirmPassword', 'pwdIcon2');
+
+const pwdInput = document.getElementById('password');
+
+pwdInput.addEventListener('input', () => {
+
+  const v = pwdInput.value;
+  let score = 0;
+
+  if (v.length >= 6) score++;
+  if (v.length >= 10) score++;
+  if (/[A-Z]/.test(v) && /[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+
+  const segs = ['seg1', 'seg2', 'seg3', 'seg4'];
+  const classes = ['weak', 'fair', 'good', 'strong'];
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+
+  segs.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'strength-seg';
+
+    if (i < score) {
+      el.classList.add(classes[score - 1]);
     }
-    setupToggle('pwdToggle1', 'password', 'pwdIcon1');
-    setupToggle('pwdToggle2', 'confirmPassword', 'pwdIcon2');
+  });
 
-    const pwdInput = document.getElementById('password');
-    pwdInput.addEventListener('input', () => {
-      const v = pwdInput.value;
-      let score = 0;
-      if (v.length >= 6)  score++;
-      if (v.length >= 10) score++;
-      if (/[A-Z]/.test(v) && /[0-9]/.test(v)) score++;
-      if (/[^A-Za-z0-9]/.test(v)) score++;
-      const segs = ['seg1','seg2','seg3','seg4'];
-      const classes = ['weak','fair','good','strong'];
-      const labels  = ['','Weak','Fair','Good','Strong'];
-      segs.forEach((id, i) => {
-        const el = document.getElementById(id);
-        el.className = 'strength-seg';
-        if (i < score) el.classList.add(classes[score - 1]);
-      });
-      document.getElementById('strengthLabel').textContent = v.length ? labels[score] : '';
-    });
+  document.getElementById('strengthLabel').textContent =
+    v.length ? labels[score] : '';
+});
 
-    document.querySelectorAll('input').forEach(el => {
-      el.addEventListener('input', () => el.classList.remove('field-error'));
-    });
-document.getElementById('registerForm').addEventListener('submit', async (e) => { 
- e.preventDefault();
+document.querySelectorAll('input').forEach(el => {
+  el.addEventListener('input', () => {
+    el.classList.remove('field-error');
+  });
+});
 
-  const firstName = document.getElementById('firstName');
-  const lastName = document.getElementById('lastName');
-  const email = document.getElementById('email');
-  const phone = document.getElementById('phone');
-  const password = document.getElementById('password');
-  const confirm = document.getElementById('confirmPassword');
-  const terms = document.getElementById('terms');
+document.getElementById('registerForm')
+.addEventListener('submit', async (e) => {
+
+  e.preventDefault();
+
+  const firstName =
+    document.getElementById('firstName');
+
+  const lastName =
+    document.getElementById('lastName');
+
+  const email =
+    document.getElementById('email');
+
+  const phone =
+    document.getElementById('phone');
+
+  const password =
+    document.getElementById('password');
+
+  const confirm =
+    document.getElementById('confirmPassword');
+
+  const terms =
+    document.getElementById('terms');
 
   let valid = true;
 
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+  const emailOk =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email.value.trim());
 
   if (!firstName.value.trim()) {
     firstName.classList.add('field-error');
@@ -241,7 +282,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     valid = false;
   }
 
-  if (confirm.value !== password.value || !confirm.value) {
+  if (
+    confirm.value !== password.value ||
+    !confirm.value
+  ) {
     confirm.classList.add('field-error');
     valid = false;
   }
@@ -253,59 +297,46 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
   if (!valid) return;
 
-  const btn = document.getElementById('submitBtn');
+  const btn =
+    document.getElementById('submitBtn');
+
   btn.classList.add('loading');
 
-try {
+  try {
 
-  const response = await fetch(
-    "http://localhost:3000/register",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        firstName: firstName.value.trim(),
-        lastName: lastName.value.trim(),
-        email: email.value.trim(),
-        phone: phone.value.trim(),
-        password: password.value
-      })
-    }
-  );
+    await createUserWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value
+    );
 
-  const data = await response.json();
-
-  btn.classList.remove('loading');
-
-  if (data.success) {
+    btn.classList.remove('loading');
 
     btn.innerHTML =
       '<span class="btn-shine"></span><span class="btn-text">✓ Account Created!</span>';
 
     btn.style.background = '#22c55e';
 
-    alert(data.message);
+    alert("Account Created Successfully");
 
     setTimeout(() => {
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     }, 1000);
 
-  } else {
-    alert(data.message);
+  } catch (error) {
+
+    btn.classList.remove('loading');
+
+    alert(error.message);
+
   }
-} catch(error) {
-  btn.classList.remove('loading');
-  console.error(error);
-  alert("Server Connection Failed");
-}
 
 });
 
 function socialSignup(provider) {
-  alert(`Social signup with ${provider} is not implemented in this demo.`);
+  alert(`${provider} signup not configured yet`);
 }
-  </script> 
+
+</script>
 </body>
 </html>

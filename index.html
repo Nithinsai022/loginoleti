@@ -94,39 +94,69 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     </div>
   </div>
 
-  <script>
-    const pwdToggle = document.getElementById('pwdToggle');
-    const pwdInput  = document.getElementById('password');
-    const pwdIcon   = document.getElementById('pwdIcon');
-    pwdToggle.addEventListener('click', () => {
-      const show = pwdInput.type === 'password';
-      pwdInput.type = show ? 'text' : 'password';
-      pwdIcon.className = show ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
-    });
+  <script type="module">
 
-    const emailInput = document.getElementById('email');
-    emailInput.addEventListener('blur', () => {
-      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
-      emailInput.classList.toggle('field-error', emailInput.value && !valid);
-    });
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+import { auth } from "./firebase.js";
+
+import {
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+const pwdToggle = document.getElementById('pwdToggle');
+const pwdInput = document.getElementById('password');
+const pwdIcon = document.getElementById('pwdIcon');
+
+pwdToggle.addEventListener('click', () => {
+  const show = pwdInput.type === 'password';
+  pwdInput.type = show ? 'text' : 'password';
+  pwdIcon.className = show
+    ? 'fa-regular fa-eye-slash'
+    : 'fa-regular fa-eye';
+});
+
+const emailInput = document.getElementById('email');
+
+emailInput.addEventListener('blur', () => {
+  const valid =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+
+  emailInput.classList.toggle(
+    'field-error',
+    emailInput.value && !valid
+  );
+});
+
+document.getElementById('loginForm')
+.addEventListener('submit', async (e) => {
+
   e.preventDefault();
 
-  const submitBtn = document.getElementById('submitBtn');
+  const submitBtn =
+    document.getElementById('submitBtn');
+
   submitBtn.classList.add('btn-loading');
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const email =
+    document.getElementById('email')
+    .value.trim();
+
+  const password =
+    document.getElementById('password')
+    .value;
 
   let valid = true;
 
   if (!email) {
-    document.getElementById('email').classList.add('field-error');
+    document.getElementById('email')
+    .classList.add('field-error');
+
     valid = false;
   }
 
   if (!password) {
-    document.getElementById('password').classList.add('field-error');
+    document.getElementById('password')
+    .classList.add('field-error');
+
     valid = false;
   }
 
@@ -137,50 +167,34 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   try {
 
-  const response = await fetch(
-    "http://localhost:3000/login",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }
-  );
-
-  const data = await response.json();
-
-  submitBtn.classList.remove('btn-loading');
-
-  if (data.success) {
-
-    localStorage.setItem(
-      "loggedInUser",
-      JSON.stringify(data.user)
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
     );
+
+    submitBtn.classList.remove('btn-loading');
 
     submitBtn.innerHTML =
       '<span class="btn-text">✓ Login Successful</span>';
 
-    submitBtn.style.background = '#22c55e';
+    submitBtn.style.background =
+      '#22c55e';
 
     setTimeout(() => {
-      window.location.replace("../dashboard.html");
+      window.location.replace("home.html");
     }, 1000);
 
-  } else {
-    alert(data.message);
+  } catch (error) {
+
+    submitBtn.classList.remove('btn-loading');
+
+    alert(error.message);
+
   }
 
-} catch (error) {
-  submitBtn.classList.remove('btn-loading');
-  console.error(error);
-  alert("Server Connection Failed");
-}
 });
+
 </script>
 </body>
 </html>
