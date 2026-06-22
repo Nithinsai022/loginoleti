@@ -436,53 +436,82 @@ body.register-page .btn-primary.loading .btn-text { display: none; }
 @media (max-width: 760px) {
   body.register-page .field-row-2 { grid-template-columns: 1fr; }
 }
-/* ==========================
-   MOBILE FIX
-========================== */
+/* =========================
+   MOBILE RESPONSIVE FIX
+========================= */
 
 @media screen and (max-width: 768px) {
 
   body.login-page,
   body.register-page {
-    display: block;
-    min-height: 100vh;
     padding: 10px;
     overflow-y: auto;
+    min-height: 100vh;
   }
 
   #scene {
-    width: 100%;
-    min-height: auto;
     display: flex;
     flex-direction: column;
-    border-radius: 24px;
+    width: 100%;
+    min-height: auto;
+    border-radius: 20px;
     overflow: visible;
   }
 
-  /* Hide left section on mobile */
+  /* KEEP BRAND SECTION VISIBLE */
   .brand-panel {
+    width: 100%;
+    padding: 25px 20px;
+    text-align: center;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .logo h1 {
+    font-size: 28px;
+  }
+
+  .brand-copy h2 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .brand-copy p {
+    font-size: 14px;
+  }
+
+  /* SHOW LOGIN / REGISTER LINKS */
+  .cta-register,
+  .cta-login {
+    display: block;
+    margin-top: 20px;
+  }
+
+  /* HIDE LARGE DECORATIONS ONLY */
+  .perks,
+  .deco-card {
     display: none;
   }
 
-  /* Login/Register form takes full width */
   .form-panel {
     width: 100%;
-    max-width: 100%;
     padding: 25px 20px;
   }
 
   .form-header h1 {
     font-size: 2rem;
     text-align: center;
-    margin-bottom: 10px;
   }
 
   .form-header p {
     text-align: center;
-    font-size: 14px;
   }
 
-  /* Social buttons */
   .social-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -495,17 +524,13 @@ body.register-page .btn-primary.loading .btn-text { display: none; }
 
   .social-btn {
     width: 100%;
-    height: 48px;
+    min-height: 48px;
   }
 
-  /* Inputs */
-  .input-wrap input {
-    width: 100%;
-    font-size: 16px;
-  }
-
-  .field {
-    margin-bottom: 16px;
+  .field-row-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
 
   .field-row {
@@ -515,32 +540,88 @@ body.register-page .btn-primary.loading .btn-text { display: none; }
     align-items: flex-start;
   }
 
-  .checkbox-label {
-    margin-bottom: 0;
+  .input-wrap input {
+    width: 100%;
+    font-size: 16px;
   }
 
-  .forgot-link {
-    margin-left: 0;
-  }
-
-  /* Button */
   .btn-primary {
     width: 100%;
-    height: 55px;
-    font-size: 17px;
+    min-height: 55px;
+    font-size: 16px;
   }
 
-  /* Register page first/last name */
-  .field-row-2 {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  .terms-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 768px) {
+
+  #scene{
+    display:block;
+    width:100%;
+    max-width:420px;
+    margin:auto;
   }
 
-  /* Prevent cutoff */
-  .form-panel,
-  #scene,
-  body {
-    overflow: visible;
+  .brand-panel{
+    display:block;
+    width:100%;
+    padding:20px;
+    text-align:center;
+    border:none;
+  }
+
+  .brand-copy,
+  .cta-register p{
+    display:none;
+  }
+
+  .logo{
+    justify-content:center;
+    margin-bottom:10px;
+  }
+
+  .logo h1{
+    font-size:32px;
+  }
+
+  .form-panel{
+    width:100%;
+    padding:20px;
+  }
+
+  .form-header h1{
+    font-size:34px;
+    margin-bottom:5px;
+  }
+
+  .form-header p{
+    font-size:14px;
+    margin-bottom:15px;
+  }
+
+  .social-row{
+    margin-bottom:15px;
+  }
+
+  .field{
+    margin-bottom:12px;
+  }
+
+  .btn-primary{
+    margin-top:10px;
+  }
+
+  .cta-register{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+  }
+
+  .btn-outline{
+    width:100%;
+    display:block;
   }
 }

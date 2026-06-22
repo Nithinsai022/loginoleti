@@ -171,7 +171,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 import { auth } from "./firebase.js";
 
 import {
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 function setupToggle(toggleId, inputId, iconId) {
@@ -309,6 +310,15 @@ document.getElementById('registerForm')
       email.value.trim(),
       password.value
     );
+    await updateProfile(
+  auth.currentUser,
+  {
+    displayName:
+      firstName.value.trim() +
+      " " +
+      lastName.value.trim()
+  }
+);
 
     btn.classList.remove('loading');
 
